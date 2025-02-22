@@ -2,7 +2,11 @@ package com.mindex.challenge.controller;
 
 import com.mindex.challenge.data.Employee;
 import com.mindex.challenge.data.ReportingStructure;
+import com.mindex.challenge.exception.EmployeeNotFoundException;
 import com.mindex.challenge.service.EmployeeService;
+
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -45,10 +48,10 @@ public class EmployeeController {
     }
 
     @GetMapping("/employee/{id}/reports")
-    public ReportingStructure getMethodName(@PathVariable String id) {
+    public ReportingStructure getReportingStructure(@PathVariable String id) {
         LOG.debug("Received Reporting structure for employee id [{}]", id);
 
-        return employeeService.getReportingStructure(employeeService.read(id));
+        return employeeService.getReportingStructure(read(id));
     }
     
 }
