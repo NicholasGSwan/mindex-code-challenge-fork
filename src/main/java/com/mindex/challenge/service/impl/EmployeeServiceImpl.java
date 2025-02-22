@@ -1,8 +1,12 @@
 package com.mindex.challenge.service.impl;
 
+import com.mindex.challenge.dao.CompensationRepository;
 import com.mindex.challenge.dao.EmployeeRepository;
+import com.mindex.challenge.data.Compensation;
 import com.mindex.challenge.data.Employee;
 import com.mindex.challenge.data.ReportingStructure;
+import com.mindex.challenge.exception.BadCompensationRequestException;
+import com.mindex.challenge.exception.CompensationNotFoundException;
 import com.mindex.challenge.exception.EmployeeNotFoundException;
 import com.mindex.challenge.service.EmployeeService;
 
@@ -10,12 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +32,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private CompensationRepository compensationRepository;
 
     @Override
     public Employee create(Employee employee) {
@@ -55,6 +63,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return employeeRepository.save(employee);
     }
+
+//REPORTING STRUCTURE
 
     @Override
     public ReportingStructure getReportingStructure(Employee employee) {
@@ -98,5 +108,42 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return repStruc;      
 
+    }
+
+
+//COMPENSATION
+
+
+    @Override
+    public Compensation getCompensation(Employee employee){
+        List<Compensation> compList = getCompensationHistory(employee);
+        return compList.get(0);
+    }
+
+    public List<Compensation> getCompensationHistory(Employee employee){
+        List<Compensation> compList = compensationRepository.findByEmployeeOrderByEffectiveDateDesc(employee.getEmployeeId());
+        if(Objects.isNull(compList) || compList.isEmpty()){
+            throw new CompensationNotFoundException();
+        }
+        return compList;
+    }
+
+    @Override
+    public Compensation updateCompensation(Compensation compensation){
+        if(Objects.isNull(compensation.getSalary())){
+            throw new BadCompensationRequestException("No Salary specified in request");
+        }else if(!StringUtils.hasLength(compensation.getEmployee())){
+            throw new BadCompensationRequestException("Request body does not contain an Employee id");
+        }
+        //checks to see if valid employee
+        Employee employee = read(compensation.getEmployee());
+        LOG.debug("Updating Compensation for employee id: [{}], name {}", employee.getEmployeeId(), employee.getFirstName() + " " + employee.getLastName());
+
+        //I figured if there was no date, we could just set the effective date to now
+        if(Objects.isNull(compensation.getEffectiveDate())){
+            compensation.setEffectiveDate(LocalDateTime.now());
+        }
+
+        return compensationRepository.save(compensation);
     }
 }
