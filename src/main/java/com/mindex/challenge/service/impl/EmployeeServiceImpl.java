@@ -135,9 +135,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Compensation getCompensation(Employee employee){
         List<Compensation> compList = getCompensationHistory(employee);
-        return compList.get(0);
+        int i = 0;
+        //will get latest without getting future dated
+        while(compList.get(i).getEffectiveDate().isAfter(LocalDateTime.now())){
+            i++;
+        }
+
+        return compList.get(i);
     }
 
+    @Override
     public List<Compensation> getCompensationHistory(Employee employee){
         List<Compensation> compList = compensationRepository.findByEmployeeOrderByEffectiveDateDesc(employee.getEmployeeId());
         if(Objects.isNull(compList) || compList.isEmpty()){
