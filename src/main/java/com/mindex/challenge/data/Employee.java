@@ -2,7 +2,11 @@ package com.mindex.challenge.data;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
+
 public class Employee {
+    //added id annotation since update was creating duplicates in the db
+    @Id
     private String employeeId;
     private String firstName;
     private String lastName;
