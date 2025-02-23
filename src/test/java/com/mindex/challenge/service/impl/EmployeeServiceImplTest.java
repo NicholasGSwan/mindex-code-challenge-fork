@@ -52,6 +52,7 @@ public class EmployeeServiceImplTest {
         employeeIdUrl = "http://localhost:" + port + "/employee/{id}";
     }
 
+    //updated tests to use employee service...
     @Test
     public void testCreateReadUpdate() {
         Employee testEmployee = new Employee();
@@ -152,7 +153,7 @@ public class EmployeeServiceImplTest {
         var comp4 = employeeService.updateCompensation(compensation);
 
         //assert get compensation returns current compensation and not future dated compensation
-        assertEquals(comp3.getSalary(), employeeService.getCompensation(emp1).getSalary());
+        assertCompensationEquivalence(comp3, employeeService.getCompensation(emp1));
         assertNotEquals(comp4.getSalary(), employeeService.getCompensation(emp1).getSalary());
 
         //assert compensation history is not empty
