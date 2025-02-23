@@ -11,6 +11,7 @@ public interface EmployeeService {
     Employee read(String id);
     Employee update(Employee employee);
     ReportingStructure getReportingStructure(Employee employee);
+    ReportingStructure getReportingStructureRecursion(Employee employee);
     Compensation getCompensation(Employee employee);
     List<Compensation> getCompensationHistory(Employee employee);
     Compensation updateCompensation(Compensation compensation);

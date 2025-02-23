@@ -27,4 +27,9 @@ public class ReportingStructure {
         this.numberOfReports = numberOfReports;
     }
 
+    public ReportingStructure add(ReportingStructure underlings){
+        this.numberOfReports = this.numberOfReports + underlings.numberOfReports +1;
+        return this;
+    }
+
 }

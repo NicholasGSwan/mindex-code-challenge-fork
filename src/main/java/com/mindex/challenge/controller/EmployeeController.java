@@ -58,5 +58,11 @@ public class EmployeeController {
         LOG.debug("Received Reporting structure for employee id [{}]", id);
 
         return employeeService.getReportingStructure(read(id));
-    }    
+    }
+    @GetMapping("/employee/{id}/reportsrecur")
+    public ReportingStructure getReportingStructureRecursion(@PathVariable String id) {
+        LOG.debug("Received Reporting structure for employee id [{}]", id);
+
+        return employeeService.getReportingStructureRecursion(read(id));
+    }       
 }

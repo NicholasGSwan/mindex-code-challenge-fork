@@ -110,6 +110,24 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    //came up with a recursive solution for fun. This breaks under two conditions (that I can think of): if there are duplicate reports, and if there are non-valid employee ids in the db
+    @Override
+    public ReportingStructure getReportingStructureRecursion(Employee employee){
+        ReportingStructure repStruc = new ReportingStructure(employee.getEmployeeId(), 0L);
+        //check to see if employee has direct reports, if not return 0
+        if(employee.getDirectReports() == null || employee.getDirectReports().isEmpty()){
+            LOG.debug("No direct reports for employee id [{}]", employee.getEmployeeId());
+            return repStruc;
+        }
+
+        for(Employee emp: employee.getDirectReports()){
+            emp = read(emp.getEmployeeId());
+            if(Objects.nonNull(repStruc)) repStruc.add(getReportingStructureRecursion(emp));
+        }
+
+        return repStruc;
+    }
+
 
 //COMPENSATION
 
